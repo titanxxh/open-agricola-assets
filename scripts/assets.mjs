@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const distRoot = path.join(root, 'dist')
 const shaPattern = /^[0-9a-f]{40}$/
-const imagePattern = /\.(jpg|png|webp)$/
+const assetPattern = /\.(jpg|png|webp|woff2|woff|ttf|txt)$/
 
 const assertSha = (sha) => {
   if (!shaPattern.test(sha)) throw new Error(`Invalid commit SHA: ${sha}`)
@@ -33,7 +33,7 @@ const assertAssetPaths = (files) => {
       || file.includes('\\')
       || file.includes('?')
       || file.includes('#')
-      || !imagePattern.test(file)
+      || !assetPattern.test(file)
     ) {
       throw new Error(`Invalid asset path: ${file}`)
     }
