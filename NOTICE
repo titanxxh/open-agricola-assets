@@ -1,0 +1,26 @@
+Open Agricola Assets
+Copyright 2026 titanxxh
+
+This repository hosts the static image and font assets used by Open Agricola
+(https://github.com/titanxxh/open-agricola), an unofficial fan implementation
+of Agricola.
+
+Agricola is a board game designed by Uwe Rosenberg and published by Lookout
+Spiele / Z-Man Games. The Agricola name, rules, card text, and artwork are the
+property of their respective copyright holders. This repository is not
+affiliated with, endorsed by, or sponsored by Lookout Spiele, Z-Man Games, or
+Asmodee.
+
+Contents of assets/revised/ reproduce artwork from the Agricola Revised
+Edition. That artwork is NOT licensed by this project; it remains the property
+of its respective copyright holders and is mirrored here solely to serve a
+non-commercial fan project. Rights holders may open an issue or contact the
+maintainer to request removal, and such requests will be honoured.
+
+Artwork under assets/moor/, assets/parents/, assets/through-the-seasons/,
+assets/player56/, and assets/website-bg/ is original work created for this
+project.
+
+The Carlito font under assets/fonts/ is Copyright 2013 The Carlito Project
+Authors and is licensed under the SIL Open Font License, Version 1.1; see
+assets/fonts/Carlito-LICENSE.txt.

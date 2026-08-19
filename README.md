@@ -4,6 +4,9 @@ Current-only static image source for Open Agricola.
 
 Live site: https://titanxxh.github.io/open-agricola-assets/
 
+See [NOTICE](NOTICE) for artwork attribution, the fan-project disclaimer, and the
+font license.
+
 ## Update and publish
 
 1. Update the current files under `assets/`. Do not add version directories or old copies.
