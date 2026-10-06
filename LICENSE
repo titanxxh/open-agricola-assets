@@ -1,0 +1,29 @@
+Open Agricola Assets — License Terms
+
+This repository mixes content under different terms. Read NOTICE together
+with this file.
+
+1. Reproduced Agricola artwork (assets/revised/, assets/moor/,
+   assets/parents/, assets/player56/, assets/through-the-seasons/)
+
+   NOT LICENSED. This artwork is the property of its respective copyright
+   holders (Lookout Spiele / Z-Man Games / Asmodee and the credited artists).
+   It is mirrored here solely so that Open Agricola, a non-commercial fan
+   project, can display it. No permission is granted to copy, redistribute,
+   sell, or reuse it for any other purpose, commercial or otherwise. If you
+   fork or redeploy Open Agricola, you are responsible for your own use of
+   this artwork. Rights holders may request removal by opening an issue or
+   contacting the maintainer; such requests will be honoured.
+
+2. Carlito font (assets/fonts/)
+
+   Copyright 2013 The Carlito Project Authors. Licensed under the SIL Open
+   Font License, Version 1.1. See assets/fonts/Carlito-LICENSE.txt.
+
+3. Original material created for this project (assets/website-bg/,
+   scripts/, .github/, and the repository documentation)
+
+   Copyright 2026 titanxxh. Licensed under the Apache License, Version 2.0,
+   the same license as the main project at
+   https://github.com/titanxxh/open-agricola (see its LICENSE file).
+   http://www.apache.org/licenses/LICENSE-2.0
