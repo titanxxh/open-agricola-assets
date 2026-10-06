@@ -82,13 +82,27 @@ const build = async (sha) => {
   console.log(`Built ${files.length} assets for ${sha}`)
 }
 
-const fetchOk = async (url) => {
-  const response = await fetch(url, {
-    cache: 'no-store',
-    headers: { 'cache-control': 'no-cache' },
-  })
-  if (!response.ok) throw new Error(`${response.status} ${url}`)
-  return response
+// GitHub Pages returns sporadic 5xx responses right after a deployment, so
+// retry server errors and network failures with a short backoff. Client
+// errors (4xx) and byte mismatches still fail immediately.
+const fetchOk = async (url, attempts = 4) => {
+  for (let attempt = 1; ; attempt += 1) {
+    let response
+    try {
+      response = await fetch(url, {
+        cache: 'no-store',
+        headers: { 'cache-control': 'no-cache' },
+      })
+    } catch (error) {
+      if (attempt >= attempts) throw error
+      await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)))
+      continue
+    }
+    if (response.ok) return response
+    if (response.status < 500 || attempt >= attempts) throw new Error(`${response.status} ${url}`)
+    await response.arrayBuffer().catch(() => undefined)
+    await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** (attempt - 1)))
+  }
 }
 
 const verify = async (base, sha) => {
