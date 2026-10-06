@@ -5,7 +5,9 @@ Current-only static image source for Open Agricola.
 Live site: https://titanxxh.github.io/open-agricola-assets/
 
 See [NOTICE](NOTICE) for artwork attribution, the fan-project disclaimer, and the
-font license.
+font license, and [LICENSE](LICENSE) for the terms that apply to each part of this
+repository. The reproduced Agricola artwork is **not** licensed by this project and
+may only be used for the non-commercial fan project.
 
 ## Update and publish
 
