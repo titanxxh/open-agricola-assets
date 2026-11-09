@@ -9,6 +9,20 @@ font license, and [LICENSE](LICENSE) for the terms that apply to each part of th
 repository. The reproduced Agricola artwork is **not** licensed by this project and
 may only be used for the non-commercial fan project.
 
+## Classic card artwork
+
+The 1,024 classic card faces are stored under `assets/classic/<deck>/<original-code>.png`.
+The deck directories are `BI`, `C`, `E`, `FL`, `FR`, `G`, `I`, `K`, `NL`, `O`,
+`PI`, `WA`, `WM`, and `Z`. Original filenames and PNG bytes are preserved from
+the `agricolaoldnice` source used by the main repository's classic-card import.
+Card identities and source provenance are recorded in the main repository's
+`reference/classic/source-cards.json` and `docs/classic/migration-manifest.json`.
+
+The main application consumes these images through its pinned public asset
+contract; they are not bundled in the application repository. Publish this
+repository before updating that application's `public-assets.ref` and
+`public-assets.required.json`.
+
 ## Update and publish
 
 1. Update the current files under `assets/`. Do not add version directories or old copies.
