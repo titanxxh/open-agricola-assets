@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -5,7 +6,10 @@ import { fileURLToPath } from 'node:url'
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const distRoot = path.join(root, 'dist')
 const shaPattern = /^[0-9a-f]{40}$/
+const digestPattern = /^[0-9a-f]{64}$/
 const assetPattern = /\.(jpg|png|webp|woff2|woff|ttf|txt)$/
+
+const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex')
 
 const assertSha = (sha) => {
   if (!shaPattern.test(sha)) throw new Error(`Invalid commit SHA: ${sha}`)
@@ -64,12 +68,14 @@ const build = async (sha) => {
 
   const copiedFiles = await listAssets(distRoot)
   assertSameFiles(copiedFiles, files, 'Pages artifact')
+  const digests = {}
   for (const file of files) {
     const [source, copied] = await Promise.all([
       readFile(path.join(root, file)),
       readFile(path.join(distRoot, file)),
     ])
     if (!source.equals(copied)) throw new Error(`Copied bytes differ: ${file}`)
+    digests[file] = sha256(copied)
   }
 
   await Promise.all([
@@ -78,6 +84,7 @@ const build = async (sha) => {
       path.join(distRoot, 'asset-manifest.json'),
       `${JSON.stringify({ version: sha, files })}\n`,
     ),
+    writeFile(path.join(distRoot, 'asset-digests.json'), `${JSON.stringify({ version: sha, digests })}\n`),
   ])
   console.log(`Built ${files.length} assets for ${sha}`)
 }
@@ -105,6 +112,30 @@ const fetchOk = async (url, attempts = 4) => {
   }
 }
 
+const parseDigests = (text, sha, files) => {
+  const manifest = JSON.parse(text)
+  if (
+    !manifest
+    || typeof manifest !== 'object'
+    || Array.isArray(manifest)
+    || Object.keys(manifest).sort().join(',') !== 'digests,version'
+    || !manifest.digests
+    || typeof manifest.digests !== 'object'
+    || Array.isArray(manifest.digests)
+  ) {
+    throw new Error('Invalid live digest manifest')
+  }
+  if (manifest.version !== sha) throw new Error(`Live digest manifest version does not match ${sha}`)
+  const { digests } = manifest
+  assertSameFiles(Object.keys(digests).sort(), files, 'Live digest manifest')
+  for (const file of files) {
+    if (typeof digests[file] !== 'string' || !digestPattern.test(digests[file])) {
+      throw new Error(`Invalid live SHA-256 digest: ${file}`)
+    }
+  }
+  return digests
+}
+
 const verify = async (base, sha) => {
   assertSha(sha)
   const baseUrl = new URL(base)
@@ -113,12 +144,10 @@ const verify = async (base, sha) => {
   baseUrl.search = ''
   baseUrl.hash = ''
 
-  const versionUrl = new URL('asset-version.txt', baseUrl)
-  const manifestUrl = new URL('asset-manifest.json', baseUrl)
-  const [version, manifestText] = await Promise.all([
-    (await fetchOk(versionUrl)).text(),
-    (await fetchOk(manifestUrl)).text(),
-  ])
+  const [version, manifestText, digestsText] = await Promise.all(
+    ['asset-version.txt', 'asset-manifest.json', 'asset-digests.json']
+      .map(async (file) => (await fetchOk(new URL(file, baseUrl))).text()),
+  )
   if (version !== `${sha}\n`) throw new Error(`Live version does not match ${sha}`)
 
   const manifest = JSON.parse(manifestText)
@@ -135,6 +164,7 @@ const verify = async (base, sha) => {
   }
   assertAssetPaths(manifest.files)
   assertSameFiles(manifest.files, await listAssets(root), 'Live manifest')
+  const digests = parseDigests(digestsText, sha, manifest.files)
 
   let next = 0
   let bytes = 0
@@ -150,6 +180,7 @@ const verify = async (base, sha) => {
       ])
       const live = Buffer.from(await response.arrayBuffer())
       if (!local.equals(live)) throw new Error(`Live bytes differ: ${file}`)
+      if (sha256(live) !== digests[file]) throw new Error(`Live SHA-256 digest differs: ${file}`)
       bytes += live.length
     }
   })

@@ -37,7 +37,17 @@ repository before updating that application's `public-assets.ref` and
 4. Wait for the `Deploy assets to GitHub Pages` workflow to succeed.
 5. Only then update `public-assets.ref` in `titanxxh/open-agricola`.
 
-The workflow generates `asset-version.txt` and `asset-manifest.json` from the deployed commit without committing them. It then downloads and byte-checks every live manifest entry against the same checkout.
+The workflow generates three files from the deployed commit:
+
+- `asset-version.txt` contains the commit SHA.
+- `asset-manifest.json` contains that SHA as `version` and the sorted path list as `files`.
+- `asset-digests.json` contains the same `version` and a `digests` object. It maps
+  every path in `files`, including its `assets/` prefix, to the lowercase
+  hexadecimal SHA-256 of the published bytes.
+
+These files are generated in `dist/`. The live check verifies version and path
+coverage. For each downloaded asset, it compares the bytes with the checkout
+and the SHA-256 with `asset-digests.json`.
 
 To repeat the live check locally:
 
